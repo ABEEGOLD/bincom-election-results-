@@ -1,0 +1,16 @@
+{% macro results_table(rows) %}
+  {% set top = (rows | map(attribute='score') | max) or 1 %}
+  <table class="results">
+    <thead><tr><th>Party</th><th class="num">Votes</th><th class="barcol"><span class="sr">Share</span></th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td class="party">{{ r.party }}</td>
+        <td class="num">{{ r.score | thousands }}</td>
+        <td class="barcol"><span class="bar" style="width: {{ (r.score / top * 100) | round(1) }}%"></span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr><th>Total</th><th class="num">{{ rows | sum(attribute='score') | thousands }}</th><th></th></tr></tfoot>
+  </table>
+{% endmacro %}

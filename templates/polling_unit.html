@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import results_table %}
+{% block title %}Polling unit result{% endblock %}
+{% block content %}
+<h1>Polling unit result</h1>
+<p class="lede">Choose a local government, then one of its polling units.</p>
+
+<form method="get" class="panel picker">
+  <label>Local government
+    <select name="lga_id" id="lga" data-target="pu" data-source="{{ url_for('api_polling_units') }}" required>
+      <option value="">Select a local government...</option>
+      {% for l in lgas %}<option value="{{ l.lga_id }}" {{ 'selected' if l.lga_id == selected_lga }}>{{ l.lga_name }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Polling unit
+    <select name="pu" id="pu" required {{ 'disabled' if not selected_lga }}>
+      <option value="">Select a polling unit...</option>
+      {% for p in polling_units %}<option value="{{ p.uniqueid }}" {{ 'selected' if p.uniqueid == selected_pu }}>{{ p.label }}</option>{% endfor %}
+    </select>
+  </label>
+  <button class="btn" type="submit">Show results</button>
+</form>
+
+{% if not_found %}
+  <div class="notice error">That polling unit was not found.</div>
+{% endif %}
+
+{% if unit %}
+  <section class="panel">
+    <h2>{{ unit.polling_unit_name | trim }}</h2>
+    <p class="meta">
+      {% if unit.polling_unit_number %}Unit no. {{ unit.polling_unit_number }} &middot; {% endif %}
+      {{ unit.lga_name }}{% if unit.ward_name %} &middot; Ward: {{ unit.ward_name }}{% endif %}
+    </p>
+    {% if not submissions %}
+      <p class="empty">No results have been recorded for this polling unit yet.</p>
+    {% endif %}
+    {% for g in submissions %}
+      <h3 class="entry">Entered by {{ g.entered_by }}{% if g.entered_on %} on {{ g.entered_on.strftime('%d %b %Y, %H:%M') }}{% endif %}</h3>
+      {{ results_table(g.rows) }}
+    {% endfor %}
+  </section>
+{% endif %}
+{% endblock %}

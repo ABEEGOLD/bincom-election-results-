@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h1>Delta State election results, 2011</h1>
+<p class="lede">Three small tools built on the Bincom test database.</p>
+<div class="cards">
+  <a class="card" href="{{ url_for('polling_unit_results') }}">
+    <span class="tag">Question 1</span><h2>Polling unit result</h2>
+    <p>Pick a local government, then a polling unit, and see the votes for each party.</p>
+  </a>
+  <a class="card" href="{{ url_for('lga_results') }}">
+    <span class="tag">Question 2</span><h2>Local government total</h2>
+    <p>Choose an LGA and see the sum of all its polling unit results.</p>
+  </a>
+  <a class="card" href="{{ url_for('add_result') }}">
+    <span class="tag">Question 3</span><h2>Add a polling unit</h2>
+    <p>Record the results of every party for a new polling unit.</p>
+  </a>
+</div>
+{% endblock %}

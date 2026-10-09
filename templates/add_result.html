@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Add results{% endblock %}
+{% block content %}
+<h1>Add a polling unit</h1>
+<p class="lede">Record the polling unit and the votes for every party in one go.</p>
+
+{% if errors %}
+  <div class="notice error"><strong>Please fix the following:</strong>
+    <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+{% endif %}
+
+<form method="post" class="panel">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+  <fieldset>
+    <legend>Polling unit</legend>
+    <div class="grid2">
+      <label>Local government
+        <select name="lga_id" id="lga" data-target="ward" data-source="{{ url_for('api_wards') }}" required>
+          <option value="">Select a local government...</option>
+          {% for l in lgas %}<option value="{{ l.lga_id }}" {{ 'selected' if l.lga_id == form.lga_id }}>{{ l.lga_name }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Ward
+        <select name="ward_uid" id="ward" required {{ 'disabled' if not form.lga_id }}>
+          <option value="">Select a ward...</option>
+          {% for w in wards %}<option value="{{ w.uniqueid }}" {{ 'selected' if w.uniqueid == form.ward_uid }}>{{ w.ward_name }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Polling unit name
+        <input type="text" name="pu_name" maxlength="50" value="{{ form.name }}" required>
+      </label>
+      <label>Polling unit number <span class="opt">(optional)</span>
+        <input type="text" name="pu_number" maxlength="50" value="{{ form.number }}">
+      </label>
+      <label>Entered by
+        <input type="text" name="entered_by" maxlength="50" value="{{ form.entered_by }}" required>
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Votes per party</legend>
+    <div class="scores">
+      {% for p in parties %}
+      <label>{{ p.name }}
+        <input type="number" name="score_{{ p.abbr }}" min="0" max="1000000" step="1" inputmode="numeric"
+               value="{{ form.scores.get(p.abbr, '') }}" required>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <button class="btn" type="submit">Save results</button>
+</form>
+{% endblock %}

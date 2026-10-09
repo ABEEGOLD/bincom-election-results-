@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import results_table %}
+{% block title %}LGA total{% endblock %}
+{% block content %}
+<h1>Local government total</h1>
+<p class="lede">The sum of every polling unit result under the chosen local government.</p>
+
+<form method="get" class="panel picker one">
+  <label>Local government
+    <select name="lga_id" data-autosubmit required>
+      <option value="">Select a local government...</option>
+      {% for l in lgas %}<option value="{{ l.lga_id }}" {{ 'selected' if l.lga_id == lga_id }}>{{ l.lga_name }}</option>{% endfor %}
+    </select>
+  </label>
+  <button class="btn" type="submit">Show total</button>
+</form>
+
+{% if lga_id and not lga %}<div class="notice error">That local government was not found.</div>{% endif %}
+
+{% if lga %}
+  <section class="panel">
+    <h2>{{ lga.lga_name }}</h2>
+    {% if totals %}
+      <p class="meta">Added up from {{ stats.with_results }} of {{ stats.all_units }} polling unit{{ '' if stats.all_units == 1 else 's' }} that have results.</p>
+      {{ results_table(totals) }}
+      {% if stats.repeated %}
+        <p class="note">Note: {{ stats.repeated }} polling unit{{ ' has' if stats.repeated == 1 else 's have' }} more than one set of results in the database. All of them are included in the total.</p>
+      {% endif %}
+    {% else %}
+      <p class="empty">No polling unit results are recorded for this local government.</p>
+    {% endif %}
+  </section>
+{% endif %}
+{% endblock %}
